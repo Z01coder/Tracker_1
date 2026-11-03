@@ -1,0 +1,11 @@
+# Конфиг сборки Railway (Nixpacks) для «Дейлика».
+# Приложение — статика + Express, база данных не нужна.
+
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["npm ci || npm install"]
+
+[start]
+cmd = "npm start"

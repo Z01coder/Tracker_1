@@ -1,0 +1,459 @@
+/* ============================================================
+   «Дейлик» — стилизация по мини-брендбуку (этап 3).
+   Характер стиля: живой, тёплый, энергичный.
+
+   Палитра (см. info/agents.md, раздел «Мини-брендбук»):
+     #FF6B35 — основной акцент (мандарин)      #2D2A26 — основной текст
+     #FFB347 — вторичный (янтарь)              #8A8177 — вторичный текст
+     #FFF7EE — фон страницы (крем)             #58B368 — успех / низкий
+     #FFFFFF — карточки                        #E5484D — высокий / удаление
+
+   Шрифт: Nunito (Google Fonts) с системным fallback — приложение
+   полностью работоспособно без сети.
+
+   Вёрстка mobile-first: база под 360–430 px, далее tablet (≥768 px)
+   и desktop (≥1024 px).
+   ============================================================ */
+
+/* ---------- Дизайн-токены ---------- */
+
+:root {
+  /* Палитра бренда */
+  --accent: #FF6B35;
+  --accent-deep: #E5531F;      /* нажатия/градиент, чуть темнее акцента */
+  --accent-soft: #FFE8DC;      /* мягкая подложка акцента */
+  --amber: #FFB347;
+  --cream: #FFF7EE;            /* фон страницы */
+  --card: #FFFFFF;             /* карточки */
+  --ink: #2D2A26;              /* основной текст */
+  --ink-soft: #8A8177;         /* вторичный текст */
+  --line: #F3E5D8;             /* деликатные границы на креме */
+  --success: #58B368;
+  --success-soft: #E9F6EC;
+  --warning: #EFA51E;
+  --warning-soft: #FFF3DC;
+  --danger: #E5484D;
+  --danger-soft: #FDEBEC;
+
+  --shadow-warm: 0 6px 18px rgba(255, 107, 53, 0.10), 0 2px 6px rgba(45, 42, 38, 0.06);
+  --shadow-warm-lg: 0 14px 34px rgba(255, 107, 53, 0.18), 0 4px 10px rgba(45, 42, 38, 0.08);
+
+  /* Радиусы по брендбуку: крупные, дружелюбные */
+  --r-card: 16px;
+  --r-btn: 12px;
+  --r-field: 12px;
+
+  /* Пружинная кривая для «живых» движений */
+  --spring: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- База ---------- */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: "Nunito", system-ui, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: var(--cream);
+  /* лёгкое тёплое свечение сверху — «утреннее» настроение */
+  background-image: radial-gradient(1200px 420px at 50% -160px, rgba(255, 179, 71, 0.22), transparent 70%);
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  padding: 16px 14px 40px;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.app { max-width: 640px; margin: 0 auto; }
+
+/* ---------- Шапка ---------- */
+
+.app-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+
+.app-logo {
+  width: 46px; height: 46px; flex: none;
+  border-radius: 12px;
+  box-shadow: var(--shadow-warm);
+  animation: logo-pop 0.5s var(--spring) both;
+}
+
+@keyframes logo-pop {
+  from { transform: scale(0.6) rotate(-8deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.app-title {
+  font-size: 24px; font-weight: 800; letter-spacing: 0.2px;
+  background: linear-gradient(100deg, var(--accent), var(--amber));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: var(--accent);
+}
+
+.app-date { color: var(--ink-soft); font-size: 14px; font-weight: 600; }
+
+/* ---------- Прогресс дня ---------- */
+
+.progress { margin-bottom: 16px; }
+.progress-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.progress-label { font-size: 14px; font-weight: 700; }
+.progress-percent { font-size: 14px; font-weight: 800; color: var(--accent); }
+
+.progress-track {
+  height: 10px; border-radius: 999px;
+  background: #FFEFD9;             /* тёплая дорожка */
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%; width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--amber), var(--accent));
+  transition: width 0.5s var(--spring);   /* живой рост полосы */
+}
+
+/* ---------- Быстрое добавление ---------- */
+
+.quick-add {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 10px;
+  box-shadow: var(--shadow-warm);
+  margin-bottom: 18px;
+}
+
+.priority-switch { display: flex; align-items: center; gap: 5px; padding: 0 2px; }
+
+.prio-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: none; cursor: pointer;
+  transform: scale(0.82);
+  transition: transform 0.2s var(--spring), box-shadow 0.2s;
+}
+.prio-dot:hover { transform: scale(1); }
+.prio-dot.is-active { transform: scale(1.12); box-shadow: 0 0 0 3px var(--accent-soft); }
+/* Заливка цветов приоритета — только у точек быстрого добавления
+   (не у радио-опций модалки: они красятся по checked ниже) */
+.prio-dot.prio-low { background: var(--success); }
+.prio-dot.prio-medium { background: var(--amber); }
+.prio-dot.prio-high { background: var(--danger); }
+
+.quick-input {
+  flex: 1 1 170px; min-width: 0;
+  padding: 11px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-field);
+  font: inherit; font-weight: 600;
+  background: #FFFCF8;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.quick-input::placeholder { color: var(--ink-soft); font-weight: 500; }
+.quick-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* ---------- Кнопки ---------- */
+
+.btn {
+  padding: 11px 16px;
+  border: none; border-radius: var(--r-btn);
+  font: inherit; font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s var(--spring), box-shadow 0.2s, background 0.2s;
+  /* сенсорные цели: не уже 40 px */
+  min-height: 40px;
+}
+.btn:active { transform: scale(0.96); }
+
+.btn-primary {
+  color: #fff;
+  background: linear-gradient(135deg, var(--amber), var(--accent));
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 7px 18px rgba(255, 107, 53, 0.4); }
+.btn-primary:active { transform: scale(0.96); }
+
+.btn-ghost { background: transparent; color: var(--ink-soft); }
+.btn-ghost:hover { background: var(--accent-soft); color: var(--accent-deep); }
+
+.btn-small { padding: 6px 10px; min-height: 34px; font-size: 13px; border-radius: 10px; }
+
+/* ---------- Секции списков ---------- */
+
+.task-section, .done-section, .history-section { margin-bottom: 14px; }
+.task-list { display: flex; flex-direction: column; gap: 8px; }
+.task-list[hidden] { display: none; } /* display:flex перебивает UA-стиль hidden — восстанавливаем */
+
+.section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+
+.section-toggle {
+  background: none; border: none; cursor: pointer;
+  font: inherit; font-size: 15px; font-weight: 700; color: var(--ink-soft);
+  padding: 8px 0;
+  transition: color 0.2s;
+}
+.section-toggle:hover { color: var(--accent); }
+
+.history-date {
+  font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--ink-soft);
+  margin: 12px 0 6px;
+}
+
+/* ---------- Карточка задачи ---------- */
+
+/* Mobile-first: на узком экране кнопки «Изменить/Удалить» уходят
+   в отдельную строку вниз — заголовок дышит на всю ширину */
+.card {
+  display: flex; align-items: flex-start; gap: 10px;
+  flex-wrap: wrap;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 12px;
+  box-shadow: var(--shadow-warm);
+  overflow: hidden;                 /* чистое схлопывание при удалении */
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.card-body { flex: 1 1 0; min-width: 0; }
+
+.card-actions { display: flex; gap: 2px; flex: 1 1 100%; justify-content: flex-end; }
+.card-actions .btn { padding: 6px 10px; font-size: 12.5px; min-height: 36px; }
+.card.is-done .card-actions { opacity: 0.75; }
+
+@media (min-width: 768px) {
+  /* Tablet и шире: кнопки возвращаются в строку справа */
+  .card { flex-wrap: nowrap; align-items: center; }
+  .card-body { flex: 1; }
+  .card-actions { flex: none; }
+  .card-check { align-self: center; margin-top: 0; }
+}
+
+/* Приоритет: цветная полоска слева — высокий заметен сразу */
+.card[data-priority="high"]   { border-left: 4px solid var(--danger); }
+.card[data-priority="medium"] { border-left: 4px solid var(--amber); }
+.card[data-priority="low"]    { border-left: 4px solid var(--success); }
+
+/* Появление новой карточки: выныривает снизу с лёгким овершутом */
+.card.card-enter { animation: card-in 0.4s var(--spring) both; }
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Появление из «выполненных» (снятие отметки при свёрнутой секции) */
+.card.card-return { animation: card-return 0.35s var(--spring) both; }
+
+@keyframes card-return {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Исчезновение при удалении: затухание + схлопывание высоты (из JS) */
+.card.is-leaving {
+  opacity: 0;
+  transform: scale(0.94);
+  padding-top: 0; padding-bottom: 0;
+  border-width: 0;
+  transition: opacity 0.22s ease, transform 0.22s ease,
+              max-height 0.28s ease 0.06s, padding 0.28s ease 0.06s, border-width 0.1s;
+}
+
+/* Чекбокс выполнения */
+.card-check {
+  width: 40px; height: 40px; flex: none;
+  align-self: flex-start;          /* на мобиле — у первой строки карточки */
+  margin-top: 1px;
+  border-radius: 50%;
+  border: 2.5px solid #E5D5C4;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.2s, background 0.25s var(--spring), transform 0.15s var(--spring);
+}
+.card-check:hover { border-color: var(--accent); transform: scale(1.06); }
+.card-check:active { transform: scale(0.92); }
+
+/* Галочка внутри чекбокса: рисуется CSS и «выпрыгивает» при выполнении */
+.card-check::after {
+  content: "";
+  position: absolute; inset: 0;
+  margin: auto;
+  width: 18px; height: 10px;
+  border-left: 3.5px solid #fff;
+  border-bottom: 3.5px solid #fff;
+  transform: rotate(-45deg) scale(0);
+  transform-origin: center;
+  transition: transform 0.25s var(--spring);
+}
+
+.card.is-done .card-check {
+  border-color: var(--success);
+  background: var(--success);
+  animation: check-pop 0.35s var(--spring);
+}
+.card.is-done .card-check::after { transform: rotate(-45deg) scale(1); }
+
+@keyframes check-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+/* Тело карточки */
+.card-title {
+  font-size: 16px; font-weight: 700;
+  position: relative;
+  display: inline-block;
+  overflow-wrap: anywhere;
+}
+
+/* Зачёркивание — анимированная линия, а не мгновенный text-decoration */
+.card-title::after {
+  content: "";
+  position: absolute; left: 0; top: 52%;
+  height: 2px; width: 0;
+  border-radius: 2px;
+  background: var(--ink-soft);
+  transition: width 0.3s var(--spring);
+}
+.card.is-done .card-title { color: var(--ink-soft); font-weight: 600; }
+.card.is-done .card-title::after { width: 100%; }
+
+.card-note {
+  font-size: 13.5px; color: var(--ink-soft);
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+}
+
+.card-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 7px; }
+
+.badge {
+  font-size: 11.5px; font-weight: 800;
+  padding: 2.5px 9px;
+  border-radius: 999px;
+}
+
+/* Цвета бейджа приоритета — от data-атрибута карточки */
+.card[data-priority="low"]    .badge-priority { background: var(--success-soft); color: #3E8E52; }
+.card[data-priority="medium"] .badge-priority { background: var(--warning-soft); color: #B97A0B; }
+.card[data-priority="high"]   .badge-priority { background: var(--danger-soft); color: var(--danger); }
+
+.badge-time { background: var(--accent-soft); color: var(--accent-deep); }
+.badge-transferred { background: #EEE9F8; color: #7A5FC7; }
+
+/* ---------- Пустое состояние ---------- */
+
+.empty-state {
+  text-align: center;
+  padding: 26px 16px;
+  color: var(--ink-soft);
+  border: 1.5px dashed #EBD9C6;
+  border-radius: var(--r-card);
+  background: rgba(255, 255, 255, 0.55);
+  font-weight: 600;
+  animation: card-in 0.4s var(--spring) both;
+}
+
+.empty-emoji { font-size: 34px; margin-bottom: 6px; display: inline-block; animation: bob 3.2s ease-in-out infinite; }
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(8deg); }
+}
+
+/* ---------- Модальное окно ---------- */
+
+.task-modal {
+  border: none; border-radius: 20px;
+  padding: 20px;
+  max-width: 440px; width: calc(100% - 28px);
+  box-shadow: var(--shadow-warm-lg);
+  background: var(--card);
+}
+.task-modal::backdrop { background: rgba(45, 42, 38, 0.45); backdrop-filter: blur(2px); }
+
+/* Появление модалки и подложки */
+.task-modal[open] { animation: modal-in 0.3s var(--spring) both; }
+.task-modal[open]::backdrop { animation: fade-in 0.25s ease both; }
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-title { font-size: 19px; font-weight: 800; margin-bottom: 14px; }
+
+.field { display: block; margin-bottom: 12px; }
+.field-label { display: block; font-size: 13px; font-weight: 700; color: var(--ink-soft); margin-bottom: 5px; }
+
+.field input, .field textarea {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-field);
+  font: inherit; font-weight: 600;
+  background: #FFFCF8;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field input:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.field textarea { resize: vertical; min-height: 68px; }
+
+.radio-row { display: flex; gap: 8px; }
+
+.radio-option { flex: 1; }
+.radio-option input { position: absolute; opacity: 0; pointer-events: none; }
+.radio-option span {
+  display: flex; justify-content: center; align-items: center;
+  min-height: 40px;
+  border-radius: 10px;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid var(--line);
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s var(--spring);
+}
+.radio-option input:checked + span { transform: scale(1.02); border-color: transparent; }
+.radio-option input:checked + span.prio-low    { background: var(--success-soft); color: #3E8E52; }
+.radio-option input:checked + span.prio-medium { background: var(--warning-soft); color: #B97A0B; }
+.radio-option input:checked + span.prio-high   { background: var(--danger-soft); color: var(--danger); }
+
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+
+/* ---------- Адаптивность: tablet и desktop ---------- */
+
+@media (min-width: 768px) {
+  body { padding: 28px 24px 56px; }
+  .app-header { margin-bottom: 22px; }
+  .app-logo { width: 54px; height: 54px; border-radius: 14px; }
+  .app-title { font-size: 28px; }
+  .quick-add { padding: 12px 14px; }
+  .card { padding: 14px 16px; }
+}
+
+@media (min-width: 1024px) {
+  /* На desktop трекер дня остаётся комфортной центральной колонкой */
+  .app { max-width: 680px; }
+}
+
+/* ---------- Доступность: уважаем настройку «меньше движения» ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "daylik-tracker",
+  "version": "1.0.0",
+  "description": "«Дейлик» — трекер задач на день (Tracker_1, учебный кейс FGIp07). Сервер только раздаёт статику, данные хранятся в localStorage браузера.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <!-- «Дейлик» — трекер задач на день. Этап 2: функционал прежде стиля. -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Дейлик — задачи на день</title>
+  <meta name="theme-color" content="#FF6B35">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <!-- Nunito с системным fallback: без сети приложение не ломается -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app">
+
+    <!-- Шапка: логотип, название, сегодняшняя дата -->
+    <header class="app-header">
+      <img class="app-logo" src="assets/logo.svg" alt="Логотип «Дейлик»" width="44" height="44">
+      <div>
+        <h1 class="app-title">Дейлик</h1>
+        <p class="app-date" id="appDate">Сегодня</p>
+      </div>
+    </header>
+
+    <!-- Прогресс дня: сколько задач закрыто из сегодняшних -->
+    <section class="progress" aria-label="Прогресс дня">
+      <div class="progress-row">
+        <span class="progress-label" id="progressLabel">Выполнено 0 из 0</span>
+        <span class="progress-percent" id="progressPercent">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+      </div>
+    </section>
+
+    <!-- Быстрое добавление: одно поле, приоритет по выбору, Enter или кнопка -->
+    <form class="quick-add" id="quickAddForm">
+      <div class="priority-switch" id="prioritySwitch" role="radiogroup" aria-label="Приоритет новой задачи">
+        <!-- точки выбираются кликом; активная подсвечивается -->
+        <button type="button" class="prio-dot prio-low" data-priority="low" aria-label="Низкий приоритет"></button>
+        <button type="button" class="prio-dot prio-medium is-active" data-priority="medium" aria-label="Средний приоритет"></button>
+        <button type="button" class="prio-dot prio-high" data-priority="high" aria-label="Высокий приоритет"></button>
+      </div>
+      <input class="quick-input" id="quickInput" type="text"
+             placeholder="Что сделать сегодня?" autocomplete="off" maxlength="200">
+      <button class="btn btn-primary" type="submit">Добавить</button>
+      <button class="btn btn-ghost" type="button" id="openDetailsBtn" title="Добавить с деталями (заметка, время)">С деталями</button>
+    </form>
+
+    <!-- Активные задачи дня -->
+    <section class="task-section" aria-label="Активные задачи">
+      <div id="activeList" class="task-list"></div>
+      <!-- Пустое состояние: показывается, когда активных задач нет -->
+      <div class="empty-state" id="emptyState" hidden>
+        <p class="empty-emoji">☀️</p>
+        <p class="empty-text">На сегодня всё чисто.<br>Добавь первую задачу — и день закипит!</p>
+      </div>
+    </section>
+
+    <!-- Выполнено сегодня: свёрнутый список + очистка -->
+    <section class="done-section" aria-label="Выполнено сегодня">
+      <div class="section-head">
+        <button class="section-toggle" id="doneToggle" type="button" aria-expanded="false">
+          Выполнено сегодня (<span id="doneCount">0</span>)
+        </button>
+        <button class="btn btn-ghost btn-small" id="clearDoneBtn" type="button" hidden>Очистить</button>
+      </div>
+      <div id="doneList" class="task-list" hidden></div>
+    </section>
+
+    <!-- Ранние дни: история выполненного за прошлые дни -->
+    <section class="history-section" aria-label="Ранние дни">
+      <div class="section-head">
+        <button class="section-toggle" id="historyToggle" type="button" aria-expanded="false">
+          Ранние дни (<span id="historyCount">0</span>)
+        </button>
+      </div>
+      <div id="historyList" class="task-list" hidden></div>
+    </section>
+
+  </div>
+
+  <!-- Модальное окно «Задача»: создание с деталями и редактирование -->
+  <dialog class="task-modal" id="taskModal">
+    <form id="taskForm" method="dialog" novalidate>
+      <h2 class="modal-title" id="modalTitle">Новая задача</h2>
+
+      <label class="field">
+        <span class="field-label">Название</span>
+        <input type="text" id="taskTitle" maxlength="200" required>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Заметка</span>
+        <textarea id="taskNote" rows="3" maxlength="500" placeholder="Детали, ссылки, пояснения…"></textarea>
+      </label>
+
+      <div class="field">
+        <span class="field-label">Приоритет</span>
+        <div class="radio-row" id="priorityRadios">
+          <label class="radio-option"><input type="radio" name="priority" value="low"><span class="prio-low">Низкий</span></label>
+          <label class="radio-option"><input type="radio" name="priority" value="medium" checked><span class="prio-medium">Средний</span></label>
+          <label class="radio-option"><input type="radio" name="priority" value="high"><span class="prio-high">Высокий</span></label>
+        </div>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Время (необязательно)</span>
+        <input type="time" id="taskTime">
+      </label>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" id="cancelModalBtn">Отмена</button>
+        <button class="btn btn-primary" type="submit" id="saveTaskBtn">Сохранить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
