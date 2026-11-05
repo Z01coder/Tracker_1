@@ -7,3 +7,8 @@ npm-debug.log*
 
 # Внутренний рабочий документ (план разработки агента)
 plan.md
+
+# Служебные материалы из info/ (в репозиторий не идут)
+info/agents.md
+info/ordscr1.jpg
+info/ordlink1.txt
